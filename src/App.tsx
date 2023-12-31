@@ -15,15 +15,18 @@ const App = () => {
   const openModal = () => {
     setIsOpen(true);
   };
-
   const productCardsList = productList.map((product) => (
     <ProductCard product={product} key={product.id} />
   ));
 
   return (
     <main className="container mx-auto">
-      <div className="mt-2">
-        <Button onClick={openModal} className="bg-indigo-600 text-white">
+      <div className="mt-2 flex justify-center">
+        <Button
+          onClick={openModal}
+          className="bg-indigo-600 text-white"
+          width="w-fit"
+        >
           Add new Product
         </Button>
       </div>

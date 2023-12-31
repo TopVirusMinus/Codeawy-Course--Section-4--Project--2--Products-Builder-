@@ -1,9 +1,12 @@
 import { ChangeEvent, FormEvent, Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { formInputsList } from "../../data";
+import { colors, formInputsList } from "../../data";
 import Button from "./Button";
 import Input from "./Input";
 import { IProduct } from "../../interfaces";
+import { ValidateProductInput } from "../../validation";
+import ErrorMessage from "./ErrorMessage";
+import Color from "./Color";
 
 interface IProps {
   title: string;
@@ -12,6 +15,7 @@ interface IProps {
 }
 
 export default function Modal({ title, isOpen, closeModal }: IProps) {
+  /* ------ States ------ */
   const defaultInputObj = {
     title: "",
     description: "",
@@ -25,10 +29,21 @@ export default function Modal({ title, isOpen, closeModal }: IProps) {
   };
 
   const [inputData, setInputData] = useState<IProduct>(defaultInputObj);
+  const [errorData, setErrorData] = useState({
+    title: "",
+    description: "",
+    imageURL: "",
+    price: "",
+  });
 
+  const [selectedColors, setSelectedColors] = useState<string[]>([]);
+  console.log(selectedColors);
+
+  /* ------ Handlers ------ */
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
     setInputData((prev) => ({ ...prev, [name]: value }));
+    setErrorData((prev) => ({ ...prev, [name]: "" }));
   };
 
   const handleClose = () => {
@@ -36,6 +51,20 @@ export default function Modal({ title, isOpen, closeModal }: IProps) {
     closeModal();
   };
 
+  function submitHandler(event: FormEvent<HTMLFormElement>): void {
+    event.preventDefault();
+    setErrorData(ValidateProductInput(inputData));
+    const isError = !Object.values(errorData).every((value) => value === "");
+    console.log(errorData);
+
+    if (isError) {
+      return;
+    }
+
+    console.log("No Validation Errors");
+  }
+
+  /* ------ Data ------ */
   const inputFormData = formInputsList.map((input) => {
     return (
       <div className="flex flex-col mb-2" key={input.id}>
@@ -47,14 +76,33 @@ export default function Modal({ title, isOpen, closeModal }: IProps) {
           type={input.type}
           name={input.name}
         />
+        <ErrorMessage msg={errorData[input.name]} />
       </div>
     );
   });
 
-  function submitHandler(event: FormEvent<HTMLFormElement>): void {
-    event.preventDefault();
-    console.log(inputData);
-  }
+  const colorData = colors.map((c) => (
+    <Color
+      key={c}
+      hex={c}
+      onClick={() => {
+        if (selectedColors.includes(c)) {
+          setSelectedColors((prev) => prev.filter((color) => color !== c));
+          return;
+        }
+        setSelectedColors((prev) => [...prev, c]);
+      }}
+    />
+  ));
+
+  const colorLabels = selectedColors.map((c) => (
+    <span
+      className="px-1 text-center text-white rounded-md"
+      style={{ backgroundColor: c }}
+    >
+      {c}
+    </span>
+  ));
 
   return (
     <>
@@ -92,6 +140,8 @@ export default function Modal({ title, isOpen, closeModal }: IProps) {
                   </Dialog.Title>
                   <form className="space-y-3" onSubmit={submitHandler}>
                     {inputFormData}
+                    <div className="flex flex-wrap space-x-1">{colorData}</div>
+                    <div className="grid grid-cols-5 gap-2">{colorLabels}</div>
                     <div className="flex text-white gap-2">
                       <Button className="bg-indigo-600">Add Product</Button>
                       <Button onClick={handleClose} className="bg-gray-400">
