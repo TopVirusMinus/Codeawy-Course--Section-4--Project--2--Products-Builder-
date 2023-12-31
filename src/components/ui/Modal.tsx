@@ -1,8 +1,9 @@
-import { Fragment } from "react";
+import { ChangeEvent, FormEvent, Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { formInputsList } from "../../data";
 import Button from "./Button";
 import Input from "./Input";
+import { IProduct } from "../../interfaces";
 
 interface IProps {
   title: string;
@@ -11,14 +12,49 @@ interface IProps {
 }
 
 export default function Modal({ title, isOpen, closeModal }: IProps) {
+  const defaultInputObj = {
+    title: "",
+    description: "",
+    imageURL: "",
+    price: "",
+    colors: [],
+    category: {
+      name: "",
+      imageURL: "",
+    },
+  };
+
+  const [inputData, setInputData] = useState<IProduct>(defaultInputObj);
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { value, name } = e.target;
+    setInputData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleClose = () => {
+    setInputData(defaultInputObj);
+    closeModal();
+  };
+
   const inputFormData = formInputsList.map((input) => {
     return (
-      <div className="flex flex-col mb-2">
+      <div className="flex flex-col mb-2" key={input.id}>
         <label htmlFor={input.id}>{input.label}</label>
-        <Input id={input.id} type={input.type} name={input.name} />
+        <Input
+          onChange={(e) => handleInputChange(e)}
+          value={inputData[input.name]}
+          id={input.id}
+          type={input.type}
+          name={input.name}
+        />
       </div>
     );
   });
+
+  function submitHandler(event: FormEvent<HTMLFormElement>): void {
+    event.preventDefault();
+    console.log(inputData);
+  }
 
   return (
     <>
@@ -54,15 +90,15 @@ export default function Modal({ title, isOpen, closeModal }: IProps) {
                   >
                     {title}
                   </Dialog.Title>
-                  <div className="space-y-3">
+                  <form className="space-y-3" onSubmit={submitHandler}>
                     {inputFormData}
                     <div className="flex text-white gap-2">
                       <Button className="bg-indigo-600">Add Product</Button>
-                      <Button onClick={closeModal} className="bg-gray-400">
+                      <Button onClick={handleClose} className="bg-gray-400">
                         Close
                       </Button>
                     </div>
-                  </div>
+                  </form>
                 </Dialog.Panel>
               </Transition.Child>
             </div>

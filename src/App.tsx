@@ -6,7 +6,7 @@ import Modal from "./components/ui/Modal";
 import Button from "./components/ui/Button";
 
 const App = () => {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   const closeModal = () => {
     setIsOpen(false);
