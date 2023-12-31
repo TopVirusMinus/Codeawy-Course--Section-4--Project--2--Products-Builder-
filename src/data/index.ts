@@ -1,5 +1,5 @@
 import { v4 as uuid } from "uuid";
-import { IProduct } from "../interfaces";
+import { IFormInput, IProduct } from "../interfaces";
 
 export const productList: IProduct[] = [
   {
@@ -146,33 +146,6 @@ export const productList: IProduct[] = [
   },
 ];
 
-export const formInputsList: IFormInput[] = [
-  {
-    id: "title",
-    name: "title",
-    label: "Product Title",
-    type: "text",
-  },
-  {
-    id: "description",
-    name: "description",
-    label: "Product Description",
-    type: "text",
-  },
-  {
-    id: "image",
-    name: "imageURL",
-    label: "Product Image URL",
-    type: "text",
-  },
-  {
-    id: "price",
-    name: "price",
-    label: "Product Price",
-    type: "text",
-  },
-];
-
 export const colors: string[] = [
   "#a855f7",
   "#2563eb",
@@ -229,5 +202,32 @@ export const categories: ICategory[] = [
     name: "Camera",
     imageURL:
       "https://images.unsplash.com/photo-1502920917128-1aa500764cbd?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
+  },
+];
+
+export const formInputsList: IFormInput[] = [
+  {
+    id: "title",
+    name: "title",
+    label: "Product Title",
+    type: "text",
+  },
+  {
+    id: "description",
+    name: "description",
+    label: "Product Description",
+    type: "text",
+  },
+  {
+    id: "image",
+    name: "imageURL",
+    label: "Product Image URL",
+    type: "text",
+  },
+  {
+    id: "price",
+    name: "price",
+    label: "Product Price",
+    type: "text",
   },
 ];

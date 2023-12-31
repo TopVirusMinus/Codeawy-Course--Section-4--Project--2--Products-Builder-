@@ -1,6 +1,8 @@
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
+import { formInputsList } from "../../data";
 import Button from "./Button";
+import Input from "./Input";
 
 interface IProps {
   title: string;
@@ -9,6 +11,15 @@ interface IProps {
 }
 
 export default function Modal({ title, isOpen, closeModal }: IProps) {
+  const inputFormData = formInputsList.map((input) => {
+    return (
+      <div className="flex flex-col mb-2">
+        <label htmlFor={input.id}>{input.label}</label>
+        <Input id={input.id} type={input.type} name={input.name} />
+      </div>
+    );
+  });
+
   return (
     <>
       <Transition appear show={isOpen} as={Fragment}>
@@ -39,15 +50,18 @@ export default function Modal({ title, isOpen, closeModal }: IProps) {
                 <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                   <Dialog.Title
                     as="h3"
-                    className="text-lg font-medium leading-6 text-gray-900"
+                    className="text-lg font-medium leading-6 text-gray-900 mb-4"
                   >
                     {title}
                   </Dialog.Title>
-                  <div className="flex text-white gap-2 mt-2">
-                    <Button className="bg-indigo-600">Add Product</Button>
-                    <Button onClick={closeModal} className="bg-gray-400">
-                      Close
-                    </Button>
+                  <div className="space-y-3">
+                    {inputFormData}
+                    <div className="flex text-white gap-2">
+                      <Button className="bg-indigo-600">Add Product</Button>
+                      <Button onClick={closeModal} className="bg-gray-400">
+                        Close
+                      </Button>
+                    </div>
                   </div>
                 </Dialog.Panel>
               </Transition.Child>
