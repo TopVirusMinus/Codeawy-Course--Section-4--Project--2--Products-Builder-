@@ -3,6 +3,10 @@ interface IInput {
   description: string;
   imageURL: string;
   price: string;
+  colors: string[];
+}
+interface IError extends Omit<IInput, "colors"> {
+  colors: string;
 }
 
 /**
@@ -13,20 +17,23 @@ interface IInput {
  * @param {string} product.description - The description of the product.
  * @param {string} product.imageURL - The image URL of the product.
  * @param {string} product.price - The price of the product.
+ * @param {string[]} product.colors - The colors of the product.
  *
  * @returns {object} errors - Object containing validation errors.
  * @returns {string} errors.title - Validation error for the title.
  * @returns {string} errors.description - Validation error for the description.
  * @returns {string} errors.imageURL - Validation error for the image URL.
  * @returns {string} errors.price - Validation error for the price.
+ * @returns {string[]} errors.colors - Validation error for colors.
  */
 
 export const ValidateProductInput = (product: IInput) => {
-  const errors: IInput = {
+  const errors: IError = {
     title: "",
     description: "",
     imageURL: "",
     price: "",
+    colors: "",
   };
 
   const imgUrlRegex =
@@ -55,8 +62,12 @@ export const ValidateProductInput = (product: IInput) => {
   if (!product.price.trim() || isNaN(Number(product.price))) {
     errors.price = "Price is not valid!";
   }
+  console.log(product);
+  if (product.colors.length < 1) {
+    errors.colors = "You must choose a color!";
+  }
   console.log("errors");
   console.log(errors);
-  
+
   return errors;
 };

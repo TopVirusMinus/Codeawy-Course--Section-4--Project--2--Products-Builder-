@@ -1,7 +1,7 @@
 import "./App.css";
 import { FormEvent, useState, ChangeEvent } from "react";
 import ProductCard from "./components/ProductCard";
-import { productList } from "./data";
+import { categories, productList } from "./data";
 import Modal from "./components/ui/Modal";
 import Button from "./components/ui/Button";
 import { IProduct } from "./interfaces";
@@ -9,6 +9,7 @@ import { colors, formInputsList } from "./data";
 import Input from "./components/ui/Input";
 import { ValidateProductInput } from "./validation";
 import ErrorMessage from "./components/ui/ErrorMessage";
+import Select from "./components/ui/Select";
 import Color from "./components/ui/Color";
 import { v4 as uuid } from "uuid";
 
@@ -29,12 +30,14 @@ const App = () => {
     description: string;
     imageURL: string;
     price: string;
+    colors: "";
   }
   const defaultErrorObj: IErrorObj = {
     title: "",
     description: "",
     imageURL: "",
     price: "",
+    colors: "",
   };
 
   /* ------ States ------ */
@@ -46,10 +49,12 @@ const App = () => {
     description: "",
     imageURL: "",
     price: "",
+    colors: "",
   });
-
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
+  const [selected, setSelected] = useState(categories[0]);
 
+  /* ------ Handlers ------ */
   const closeModal = () => {
     setIsOpen(false);
   };
@@ -57,23 +62,32 @@ const App = () => {
   const openModal = () => {
     setIsOpen(true);
   };
-
-  /* ------ Handlers ------ */
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
     setInputData((prev) => ({ ...prev, [name]: value }));
     setErrorData((prev) => ({ ...prev, [name]: "" }));
   };
-  const handleClose = () => {
-    console.log("closing modal");
+
+  const clearForm = () => {
     setInputData(defaultInputObj);
     setErrorData(defaultErrorObj);
+    setSelectedColors([]);
+  };
+
+  const handleClose = () => {
+    console.log("closing modal");
+    clearForm();
     closeModal();
   };
 
   const submitHandler = (event: FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
-    const errorObj = ValidateProductInput(inputData);
+    console.log();
+
+    const errorObj = ValidateProductInput({
+      ...inputData,
+      colors: selectedColors,
+    });
     const isError = !Object.values(errorObj).every((value) => value === "");
 
     if (isError) {
@@ -83,9 +97,10 @@ const App = () => {
 
     console.log("No Validation Errors");
     setProducts((prev) => [
-      { ...inputData, colors: selectedColors, id: uuid() },
+      { ...inputData, colors: selectedColors, id: uuid(), category: selected },
       ...prev,
     ]);
+    closeModal();
   };
 
   /* ------ Data ------ */
@@ -147,7 +162,9 @@ const App = () => {
         <form className="space-y-3" onSubmit={submitHandler}>
           {inputFormData}
           <div className="flex flex-wrap space-x-1">{colorData}</div>
+          <ErrorMessage msg={errorData["colors"]} />
           <div className="grid grid-cols-5 gap-2">{colorLabels}</div>
+          <Select selected={selected} setSelected={setSelected} />
           <div className="flex text-white gap-2">
             <Button className="bg-indigo-600">Add Product</Button>
             <Button onClick={handleClose} type="button" className="bg-gray-400">
