@@ -55,6 +55,8 @@ export const ValidateProductInput = (product: IInput) => {
   if (!product.price.trim() || isNaN(Number(product.price))) {
     errors.price = "Price is not valid!";
   }
-
+  console.log("errors");
+  console.log(errors);
+  
   return errors;
 };
