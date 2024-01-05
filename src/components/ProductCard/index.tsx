@@ -11,6 +11,7 @@ interface IProps {
   setSelectedEditColors: Dispatch<SetStateAction<string[]>>;
   index: number;
   setCurrEditDataIdx: Dispatch<SetStateAction<number>>;
+  openDeleteModal: () => void;
 }
 
 const ProductCard = ({
@@ -20,6 +21,7 @@ const ProductCard = ({
   setSelectedEditColors,
   index,
   setCurrEditDataIdx,
+  openDeleteModal,
 }: IProps) => {
   const { title, description, imageURL, category, price, colors } = product;
   const colorData = colors.map((c) => <Color key={c} hex={c} />);
@@ -27,6 +29,12 @@ const ProductCard = ({
     openEditModal();
     setCurrEditData(product);
     setSelectedEditColors(product.colors);
+    setCurrEditDataIdx(index);
+  };
+
+  const onDelete = () => {
+    console.log(index);
+    openDeleteModal();
     setCurrEditDataIdx(index);
   };
 
@@ -63,7 +71,9 @@ const ProductCard = ({
         <Button className=" bg-indigo-600" onClick={() => onEdit()}>
           EDIT
         </Button>
-        <Button className="bg-red-600">DELETE</Button>
+        <Button className="bg-red-600" onClick={() => onDelete()}>
+          DELETE
+        </Button>
       </div>
     </div>
   );

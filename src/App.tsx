@@ -12,6 +12,7 @@ import ErrorMessage from "./components/ui/ErrorMessage";
 import Select from "./components/ui/Select";
 import Color from "./components/ui/Color";
 import { v4 as uuid } from "uuid";
+import toast, { Toaster } from "react-hot-toast";
 
 const App = () => {
   const defaultInputObj = {
@@ -43,6 +44,7 @@ const App = () => {
   /* ------ States ------ */
   const [isOpen, setIsOpen] = useState(false);
   const [isEditOpen, setEditIsOpen] = useState(false);
+  const [isDeleteOpen, setDeleteIsOpen] = useState(false);
   const [products, setProducts] = useState<IProduct[]>(productList);
   const [inputData, setInputData] = useState<IProduct>(defaultInputObj);
   const [currEditData, setCurrEditData] = useState<IProduct>(defaultInputObj);
@@ -70,8 +72,14 @@ const App = () => {
   const closeEditModal = () => {
     setEditIsOpen(false);
   };
+  const closeDeleteModal = () => {
+    setDeleteIsOpen(false);
+  };
   const openEditModal = () => {
     setEditIsOpen(true);
+  };
+  const openDeleteModal = () => {
+    setDeleteIsOpen(true);
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -123,6 +131,7 @@ const App = () => {
       { ...inputData, colors: selectedColors, id: uuid(), category: selected },
       ...prev,
     ]);
+    toast.success("Added new product!");
     closeModal();
   };
   const submitEditHandler = (event: FormEvent<HTMLFormElement>): void => {
@@ -148,7 +157,16 @@ const App = () => {
     };
 
     setProducts(newProducts);
+    toast.success("Saved product changes!");
     closeEditModal();
+  };
+
+  const deleteProductHandler = () => {
+    const newProducts = [...products];
+    newProducts.splice(currEditDataIdx, 1);
+    setProducts(newProducts);
+    toast.success("Successfully deleted product!");
+    closeDeleteModal();
   };
 
   /* ------ Data ------ */
@@ -238,6 +256,7 @@ const App = () => {
         product={product}
         key={product.id}
         openEditModal={openEditModal}
+        openDeleteModal={openDeleteModal}
         setCurrEditData={setCurrEditData}
         setSelectedEditColors={setSelectedEditColors}
         index={idx}
@@ -249,6 +268,7 @@ const App = () => {
 
   return (
     <main className="container mx-auto">
+      <Toaster />
       <div className="mt-2 flex justify-center">
         <Button
           onClick={openModal}
@@ -301,6 +321,20 @@ const App = () => {
             </Button>
           </div>
         </form>
+      </Modal>
+
+      <Modal
+        title="Delete this product?"
+        isOpen={isDeleteOpen}
+        closeModal={closeDeleteModal}
+      >
+        <p>Are you sure you want to delete this product?</p>
+        <Button
+          className="bg-red-600 text-white mt-2"
+          onClick={() => deleteProductHandler()}
+        >
+          CONFIRM DELETE
+        </Button>
       </Modal>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 p-4">
         {productCardsList}
