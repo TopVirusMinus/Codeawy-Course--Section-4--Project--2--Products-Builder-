@@ -8,8 +8,8 @@ function classNames(...classes: string[]) {
 }
 
 interface IProps {
-  selected: ICategory;
-  setSelected: React.Dispatch<React.SetStateAction<ICategory>>;
+  selected: { name: string; imageURL: string };
+  setSelected: (category: ICategory) => void;
 }
 
 export default function Select({ selected, setSelected }: IProps) {

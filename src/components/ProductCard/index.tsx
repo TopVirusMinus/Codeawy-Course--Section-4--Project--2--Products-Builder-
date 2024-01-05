@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
-import { ICategory, IProduct } from "../../interfaces";
+import { IProduct } from "../../interfaces";
 import Button from "../ui/Button";
 import { sliceText } from "../../utils/functions";
 import Color from "../ui/Color";
@@ -9,7 +9,6 @@ interface IProps {
   openEditModal: () => void;
   setCurrEditData: Dispatch<SetStateAction<IProduct>>;
   setSelectedEditColors: Dispatch<SetStateAction<string[]>>;
-  setSelectedEdit: Dispatch<SetStateAction<ICategory>>;
   index: number;
   setCurrEditDataIdx: Dispatch<SetStateAction<number>>;
 }
@@ -19,7 +18,6 @@ const ProductCard = ({
   openEditModal,
   setCurrEditData,
   setSelectedEditColors,
-  setSelectedEdit,
   index,
   setCurrEditDataIdx,
 }: IProps) => {
@@ -29,7 +27,6 @@ const ProductCard = ({
     openEditModal();
     setCurrEditData(product);
     setSelectedEditColors(product.colors);
-    setSelectedEdit(product.category);
     setCurrEditDataIdx(index);
   };
 

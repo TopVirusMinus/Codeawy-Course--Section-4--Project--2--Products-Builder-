@@ -57,7 +57,6 @@ const App = () => {
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [selectedEditColors, setSelectedEditColors] = useState<string[]>([]);
   const [selected, setSelected] = useState(categories[0]);
-  const [selectedEdit, setSelectedEdit] = useState(categories[0]);
 
   /* ------ Handlers ------ */
   const closeModal = () => {
@@ -145,11 +144,11 @@ const App = () => {
     newProducts[currEditDataIdx] = {
       ...currEditData,
       colors: selectedEditColors,
-      category: selectedEdit,
+      category: currEditData.category,
     };
 
     setProducts(newProducts);
-    closeModal();
+    closeEditModal();
   };
 
   /* ------ Data ------ */
@@ -241,7 +240,6 @@ const App = () => {
         openEditModal={openEditModal}
         setCurrEditData={setCurrEditData}
         setSelectedEditColors={setSelectedEditColors}
-        setSelectedEdit={setSelectedEdit}
         index={idx}
         setCurrEditDataIdx={setCurrEditDataIdx}
       />
@@ -286,7 +284,12 @@ const App = () => {
           <div className="flex flex-wrap space-x-1">{colorEditData}</div>
           <ErrorMessage msg={errorData["colors"]} />
           <div className="grid grid-cols-5 gap-2">{colorEditLabels}</div>
-          <Select selected={selectedEdit} setSelected={setSelectedEdit} />
+          <Select
+            selected={currEditData.category}
+            setSelected={(value) =>
+              setCurrEditData({ ...currEditData, category: value })
+            }
+          />
           <div className="flex text-white gap-2">
             <Button className="bg-indigo-600">Save Changes</Button>
             <Button
