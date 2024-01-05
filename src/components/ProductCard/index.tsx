@@ -1,15 +1,37 @@
-import { IProduct } from "../../interfaces";
+import { Dispatch, SetStateAction } from "react";
+import { ICategory, IProduct } from "../../interfaces";
 import Button from "../ui/Button";
 import { sliceText } from "../../utils/functions";
 import Color from "../ui/Color";
 
 interface IProps {
   product: IProduct;
+  openEditModal: () => void;
+  setCurrEditData: Dispatch<SetStateAction<IProduct>>;
+  setSelectedEditColors: Dispatch<SetStateAction<string[]>>;
+  setSelectedEdit: Dispatch<SetStateAction<ICategory>>;
+  index: number;
+  setCurrEditDataIdx: Dispatch<SetStateAction<number>>;
 }
 
-const ProductCard = ({ product }: IProps) => {
+const ProductCard = ({
+  product,
+  openEditModal,
+  setCurrEditData,
+  setSelectedEditColors,
+  setSelectedEdit,
+  index,
+  setCurrEditDataIdx,
+}: IProps) => {
   const { title, description, imageURL, category, price, colors } = product;
   const colorData = colors.map((c) => <Color key={c} hex={c} />);
+  const onEdit = () => {
+    openEditModal();
+    setCurrEditData(product);
+    setSelectedEditColors(product.colors);
+    setSelectedEdit(product.category);
+    setCurrEditDataIdx(index);
+  };
 
   return (
     <div className="flex flex-col space-y-3 border rounded-md p-2 max-w-sm mx-auto md:max-w-lg md:mx-0">
@@ -41,7 +63,9 @@ const ProductCard = ({ product }: IProps) => {
       </div>
 
       <div className="flex text-white space-x-2 mt-3">
-        <Button className=" bg-indigo-600">EDIT</Button>
+        <Button className=" bg-indigo-600" onClick={() => onEdit()}>
+          EDIT
+        </Button>
         <Button className="bg-red-600">DELETE</Button>
       </div>
     </div>

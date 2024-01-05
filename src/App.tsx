@@ -42,8 +42,11 @@ const App = () => {
 
   /* ------ States ------ */
   const [isOpen, setIsOpen] = useState(false);
+  const [isEditOpen, setEditIsOpen] = useState(false);
   const [products, setProducts] = useState<IProduct[]>(productList);
   const [inputData, setInputData] = useState<IProduct>(defaultInputObj);
+  const [currEditData, setCurrEditData] = useState<IProduct>(defaultInputObj);
+  const [currEditDataIdx, setCurrEditDataIdx] = useState<number>(0);
   const [errorData, setErrorData] = useState({
     title: "",
     description: "",
@@ -52,7 +55,9 @@ const App = () => {
     colors: "",
   });
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
+  const [selectedEditColors, setSelectedEditColors] = useState<string[]>([]);
   const [selected, setSelected] = useState(categories[0]);
+  const [selectedEdit, setSelectedEdit] = useState(categories[0]);
 
   /* ------ Handlers ------ */
   const closeModal = () => {
@@ -62,9 +67,23 @@ const App = () => {
   const openModal = () => {
     setIsOpen(true);
   };
+
+  const closeEditModal = () => {
+    setEditIsOpen(false);
+  };
+  const openEditModal = () => {
+    setEditIsOpen(true);
+  };
+
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
     setInputData((prev) => ({ ...prev, [name]: value }));
+    setErrorData((prev) => ({ ...prev, [name]: "" }));
+  };
+
+  const handleEditInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { value, name } = e.target;
+    setCurrEditData((prev) => ({ ...prev, [name]: value }));
     setErrorData((prev) => ({ ...prev, [name]: "" }));
   };
 
@@ -80,9 +99,14 @@ const App = () => {
     closeModal();
   };
 
+  const handleEditClose = () => {
+    console.log("closing modal");
+    clearForm();
+    closeEditModal();
+  };
+
   const submitHandler = (event: FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
-    console.log();
 
     const errorObj = ValidateProductInput({
       ...inputData,
@@ -102,6 +126,31 @@ const App = () => {
     ]);
     closeModal();
   };
+  const submitEditHandler = (event: FormEvent<HTMLFormElement>): void => {
+    event.preventDefault();
+
+    const errorObj = ValidateProductInput({
+      ...currEditData,
+      colors: selectedEditColors,
+    });
+    const isError = !Object.values(errorObj).every((value) => value === "");
+
+    if (isError) {
+      setErrorData(errorObj);
+      return;
+    }
+
+    console.log("No Validation Errors");
+    const newProducts = [...products];
+    newProducts[currEditDataIdx] = {
+      ...currEditData,
+      colors: selectedEditColors,
+      category: selectedEdit,
+    };
+
+    setProducts(newProducts);
+    closeModal();
+  };
 
   /* ------ Data ------ */
   const inputFormData = formInputsList.map((input) => {
@@ -119,7 +168,22 @@ const App = () => {
       </div>
     );
   });
-
+  const inputEditFormData = formInputsList.map((input) => {
+    return (
+      <div className="flex flex-col mb-2" key={input.id}>
+        <label htmlFor={input.id}>{input.label}</label>
+        <Input
+          onChange={(e) => handleEditInputChange(e)}
+          value={currEditData[input.name]}
+          id={input.id}
+          type={input.type}
+          name={input.name}
+        />
+        <ErrorMessage msg={errorData[input.name]} />
+      </div>
+    );
+  });
+  console.log(currEditData);
   const colorData = colors.map((c) => (
     <Color
       key={c}
@@ -129,6 +193,7 @@ const App = () => {
           setSelectedColors((prev) => prev.filter((color) => color !== c));
           return;
         }
+        setErrorData((prev) => ({ ...prev, colors: "" }));
         setSelectedColors((prev) => [...prev, c]);
       }}
     />
@@ -143,9 +208,46 @@ const App = () => {
       {c}
     </span>
   ));
-  const productCardsList = products.map((product) => (
-    <ProductCard product={product} key={product.id} />
+
+  const colorEditLabels = selectedEditColors.map((c) => (
+    <span
+      key={uuid()}
+      className="px-1 text-center text-white rounded-md"
+      style={{ backgroundColor: c }}
+    >
+      {c}
+    </span>
   ));
+  const colorEditData = colors.map((c) => (
+    <Color
+      key={c}
+      hex={c}
+      onClick={() => {
+        if (selectedEditColors.includes(c)) {
+          setSelectedEditColors((prev) => prev.filter((color) => color !== c));
+          return;
+        }
+        setErrorData((prev) => ({ ...prev, colors: "" }));
+        setSelectedEditColors((prev) => [...prev, c]);
+      }}
+    />
+  ));
+
+  const productCardsList = products.map((product, idx) => {
+    return (
+      <ProductCard
+        product={product}
+        key={product.id}
+        openEditModal={openEditModal}
+        setCurrEditData={setCurrEditData}
+        setSelectedEditColors={setSelectedEditColors}
+        setSelectedEdit={setSelectedEdit}
+        index={idx}
+        setCurrEditDataIdx={setCurrEditDataIdx}
+      />
+    );
+  });
+  console.log(currEditDataIdx);
 
   return (
     <main className="container mx-auto">
@@ -168,6 +270,30 @@ const App = () => {
           <div className="flex text-white gap-2">
             <Button className="bg-indigo-600">Add Product</Button>
             <Button onClick={handleClose} type="button" className="bg-gray-400">
+              Close
+            </Button>
+          </div>
+        </form>
+      </Modal>
+
+      <Modal
+        title="EDIT THIS PRODUCT"
+        isOpen={isEditOpen}
+        closeModal={closeEditModal}
+      >
+        <form className="space-y-3" onSubmit={(e) => submitEditHandler(e)}>
+          {inputEditFormData}
+          <div className="flex flex-wrap space-x-1">{colorEditData}</div>
+          <ErrorMessage msg={errorData["colors"]} />
+          <div className="grid grid-cols-5 gap-2">{colorEditLabels}</div>
+          <Select selected={selectedEdit} setSelected={setSelectedEdit} />
+          <div className="flex text-white gap-2">
+            <Button className="bg-indigo-600">Save Changes</Button>
+            <Button
+              onClick={handleEditClose}
+              type="button"
+              className="bg-gray-400"
+            >
               Close
             </Button>
           </div>
