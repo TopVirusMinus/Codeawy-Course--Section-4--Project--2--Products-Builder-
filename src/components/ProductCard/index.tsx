@@ -1,4 +1,5 @@
-import { Dispatch, SetStateAction } from "react";
+/* eslint-disable react-refresh/only-export-components */
+import { Dispatch, SetStateAction, memo } from "react";
 import { IProduct } from "../../interfaces";
 import Button from "../ui/Button";
 import { sliceText } from "../../utils/functions";
@@ -79,4 +80,4 @@ const ProductCard = ({
   );
 };
 
-export default ProductCard;
+export default memo(ProductCard);

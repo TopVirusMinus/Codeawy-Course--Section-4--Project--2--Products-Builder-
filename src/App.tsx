@@ -1,5 +1,5 @@
 import "./App.css";
-import { FormEvent, useState, ChangeEvent } from "react";
+import { FormEvent, useState, ChangeEvent, useCallback } from "react";
 import ProductCard from "./components/ProductCard";
 import { categories, productList } from "./data";
 import Modal from "./components/ui/Modal";
@@ -75,12 +75,12 @@ const App = () => {
   const closeDeleteModal = () => {
     setDeleteIsOpen(false);
   };
-  const openEditModal = () => {
+  const openEditModal = useCallback(() => {
     setEditIsOpen(true);
-  };
-  const openDeleteModal = () => {
+  }, []);
+  const openDeleteModal = useCallback(() => {
     setDeleteIsOpen(true);
-  };
+  }, []);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
